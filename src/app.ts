@@ -8,6 +8,7 @@ import { errorHandler } from './common/middlewares/error-handler.middleware';
 import { rateLimiter } from './common/middlewares/rate-limiter.middleware';
 
 import userRoutes from './modules/users/user.routes';
+import bookRoutes from './modules/books/book.routes';
 
 export const createApp = (): Application => {
   const app: Express = express();
@@ -27,6 +28,7 @@ export const createApp = (): Application => {
 
   // API Routes
   app.use(`/users`, userRoutes);
+  app.use(`/books`, bookRoutes);
 
   // Error handler (must be last)
   app.use(errorHandler);
