@@ -8,6 +8,9 @@ export class Book {
   @Column({ unique: true })
   name: string;
 
+  @Column({ type: 'float', default: -1 })
+  averageScore: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

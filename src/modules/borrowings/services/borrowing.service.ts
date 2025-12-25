@@ -1,9 +1,13 @@
 import { UserBookRepository } from '../repositories/user-book.repository';
 import { ConflictError } from '../../../common/errors/app.error';
 import { UserBook } from '../entities/user-book.entity';
+import { BookRepository } from '../../books/repositories/book.repository';
 
 export class BorrowingService {
-  constructor(private readonly userBookRepository: UserBookRepository) {
+  constructor(
+    private readonly userBookRepository: UserBookRepository,
+    private readonly bookRepository: BookRepository
+  ) {
   }
 
   async createBorrowing(userId: number, bookId: number): Promise<UserBook> {
@@ -30,7 +34,12 @@ export class BorrowingService {
     borrowing.returnedAt = new Date();
     borrowing.score = score;
 
-    return this.userBookRepository.save(borrowing);
+    const result = await this.userBookRepository.save(borrowing);
+
+    const average = await this.userBookRepository.getAverageScoreByBook(bookId);
+    await this.bookRepository.updateAverageScore(bookId, average);
+
+    return result;
   }
 
   async getActiveByUser(userId: number): Promise<UserBook[]> {

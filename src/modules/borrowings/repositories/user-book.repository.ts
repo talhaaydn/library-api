@@ -55,5 +55,21 @@ export class UserBookRepository {
   async save(userBook: UserBook): Promise<UserBook> {
     return this.repository.save(userBook);
   }
+
+  async getAverageScoreByBook(bookId: number): Promise<number> {
+    const result = await this.repository
+      .createQueryBuilder('ub')
+      .select('AVG(ub.score)', 'average')
+      .where('ub.bookId = :bookId', { bookId })
+      .andWhere('ub.returnedAt IS NOT NULL')
+      .andWhere('ub.score IS NOT NULL')
+      .getRawOne();
+
+    if (!result || result.average === null) {
+      return -1;
+    }
+
+    return Math.round(parseFloat(result.average) * 100) / 100;
+  }
 }
 

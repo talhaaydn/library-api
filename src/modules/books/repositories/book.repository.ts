@@ -21,5 +21,9 @@ export class BookRepository {
     const book = this.repository.create(data);
     return this.repository.save(book);
   }
+
+  async updateAverageScore(bookId: number, averageScore: number): Promise<void> {
+    await this.repository.update(bookId, { averageScore });
+  }
 }
 

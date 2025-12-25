@@ -19,7 +19,7 @@ const userRepository = new UserRepository(AppDataSource.getRepository(User));
 const userBookRepository = new UserBookRepository(AppDataSource.getRepository(UserBook));
 const bookRepository = new BookRepository(AppDataSource.getRepository(Book));
 
-const borrowingService = new BorrowingService(userBookRepository);
+const borrowingService = new BorrowingService(userBookRepository, bookRepository);
 const userService = new UserService(userRepository, borrowingService, bookRepository);
 
 const userController = new UserController(userService);

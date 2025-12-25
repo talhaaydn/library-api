@@ -9,12 +9,14 @@ import { Book } from './entities/book.entity';
 
 const router = Router();
 
-// Dependency injection setup
 const bookRepository = new BookRepository(AppDataSource.getRepository(Book));
+
 const bookService = new BookService(bookRepository);
+
 const bookController = new BookController(bookService);
 
 router.get('/', bookController.getAll);
+router.get('/:id', bookController.getById);
 router.post('/', validationMiddleware(CreateBookDto), bookController.create);
 
 export default router;
