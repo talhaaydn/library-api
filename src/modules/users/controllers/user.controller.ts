@@ -25,5 +25,36 @@ export class UserController {
     const user = await this.userService.createUser(req.body);
     res.status(201).json(user);
   });
+
+  public borrowBook = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+    const userId = parseInt(req.params.userId, 10);
+    const bookId = parseInt(req.params.bookId, 10);
+    
+    if (isNaN(userId)) {
+      throw new BadRequestError('Invalid user ID');
+    }
+    if (isNaN(bookId)) {
+      throw new BadRequestError('Invalid book ID');
+    }
+
+    await this.userService.borrowBook(userId, bookId);
+    res.status(204).send();
+  });
+
+  public returnBook = asyncHandler(async (req: Request, res: Response, _next: NextFunction) => {
+    const userId = parseInt(req.params.userId, 10);
+    const bookId = parseInt(req.params.bookId, 10);
+    const { score } = req.body;
+    
+    if (isNaN(userId)) {
+      throw new BadRequestError('Invalid user ID');
+    }
+    if (isNaN(bookId)) {
+      throw new BadRequestError('Invalid book ID');
+    }
+
+    await this.userService.returnBook(userId, bookId, score);
+    res.status(204).send();
+  });
 }
 

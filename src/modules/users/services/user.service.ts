@@ -3,9 +3,15 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { ConflictError, NotFoundError } from '../../../common/errors/app.error';
 import { UserMapper } from '../mappers/user.mapper';
+import { BorrowingService } from '../../borrowings/services/borrowing.service';
+import { BookRepository } from '../../books/repositories/book.repository';
 
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly borrowingService: BorrowingService,
+    private readonly bookRepository: BookRepository
+  ) {
   }
 
   async getAllUsers(): Promise<UserResponseDto[]> {
@@ -29,5 +35,33 @@ export class UserService {
 
     const user = await this.userRepository.create(createUserDto);
     return UserMapper.toResponseDto(user);
+  }
+
+  async borrowBook(userId: number, bookId: number): Promise<void> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    const book = await this.bookRepository.findById(bookId);
+    if (!book) {
+      throw new NotFoundError('Book not found');
+    }
+
+    await this.borrowingService.createBorrowing(userId, bookId);
+  }
+
+  async returnBook(userId: number, bookId: number, score: number): Promise<void> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    const book = await this.bookRepository.findById(bookId);
+    if (!book) {
+      throw new NotFoundError('Book not found');
+    }
+
+    await this.borrowingService.returnBorrowing(userId, bookId, score);
   }
 }

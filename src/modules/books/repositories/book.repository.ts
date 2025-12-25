@@ -9,6 +9,10 @@ export class BookRepository {
     return this.repository.find();
   }
 
+  async findById(id: number): Promise<Book | null> {
+    return this.repository.findOne({ where: { id } });
+  }
+
   async findByName(name: string): Promise<Book | null> {
     return this.repository.findOne({ where: { name } });
   }
