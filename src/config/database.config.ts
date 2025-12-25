@@ -11,7 +11,8 @@ export const dataSourceOptions: DataSourceOptions = {
   synchronize: config.database.synchronize,
   logging: config.database.logging,
   entities: ['src/modules/**/entities/*.entity{.ts,.js}'],
-  migrations: ['src/database/migrations/*{.ts,.js}']
+  migrations: ['src/database/migrations/*{.ts,.js}'],
+  migrationsRun: false
 };
 
 export const AppDataSource = new DataSource(dataSourceOptions);
