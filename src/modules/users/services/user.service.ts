@@ -1,6 +1,7 @@
 import { UserRepository } from '../repositories/user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { UserDetailResponseDto } from '../dto/user-detail-response.dto';
 import { ConflictError, NotFoundError } from '../../../common/errors/app.error';
 import { UserMapper } from '../mappers/user.mapper';
 import { BorrowingService } from '../../borrowings/services/borrowing.service';
@@ -19,12 +20,25 @@ export class UserService {
     return UserMapper.toResponseDtoList(users);
   }
 
-  async getUserById(id: number): Promise<UserResponseDto> {
+  async getUserById(id: number): Promise<UserDetailResponseDto> {
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundError('User not found');
     }
-    return UserMapper.toResponseDto(user);
+
+    const { past: pastBorrowings, present: presentBorrowings } = 
+      await this.borrowingService.getAllBooksByUser(id);
+    
+    const past = pastBorrowings.map(ub => ({
+      name: ub.book.name,
+      userScore: ub.score as number
+    }));
+
+    const present = presentBorrowings.map(ub => ({
+      name: ub.book.name
+    }));
+
+    return new UserDetailResponseDto(user.id, user.name, { past, present });
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<UserResponseDto> {

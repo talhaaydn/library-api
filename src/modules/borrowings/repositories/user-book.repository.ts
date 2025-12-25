@@ -1,4 +1,4 @@
-import { Repository, IsNull, Not } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { UserBook } from '../entities/user-book.entity';
 
 export class UserBookRepository {
@@ -24,29 +24,6 @@ export class UserBookRepository {
     });
   }
 
-  async findActiveByUser(userId: number): Promise<UserBook[]> {
-    return this.repository.find({
-      where: {
-        userId,
-        returnedAt: IsNull()
-      },
-      relations: ['book']
-    });
-  }
-
-  async findHistoryByUser(userId: number): Promise<UserBook[]> {
-    return this.repository.find({
-      where: {
-        userId,
-        returnedAt: Not(IsNull())
-      },
-      relations: ['book'],
-      order: {
-        returnedAt: 'DESC'
-      }
-    });
-  }
-
   async create(data: Partial<UserBook>): Promise<UserBook> {
     const userBook = this.repository.create(data);
     return this.repository.save(userBook);
@@ -54,6 +31,15 @@ export class UserBookRepository {
 
   async save(userBook: UserBook): Promise<UserBook> {
     return this.repository.save(userBook);
+  }
+
+  async findAllByUser(userId: number): Promise<UserBook[]> {
+    return this.repository.find({
+      where: {
+        userId
+      },
+      relations: ['book']
+    });
   }
 
   async getAverageScoreByBook(bookId: number): Promise<number> {

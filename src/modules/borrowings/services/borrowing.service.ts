@@ -42,12 +42,13 @@ export class BorrowingService {
     return result;
   }
 
-  async getActiveByUser(userId: number): Promise<UserBook[]> {
-    return this.userBookRepository.findActiveByUser(userId);
-  }
-
-  async getHistoryByUser(userId: number): Promise<UserBook[]> {
-    return this.userBookRepository.findHistoryByUser(userId);
+  async getAllBooksByUser(userId: number): Promise<{ past: UserBook[], present: UserBook[] }> {
+    const allBorrowings = await this.userBookRepository.findAllByUser(userId);
+    
+    const past = allBorrowings.filter(ub => ub.returnedAt !== null);
+    const present = allBorrowings.filter(ub => ub.returnedAt === null);
+    
+    return { past, present };
   }
 }
 
